@@ -1,0 +1,91 @@
+"use client";
+
+// @ts-ignore
+import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
+import { motion } from "framer-motion";
+
+import "@splidejs/react-splide/css";
+
+import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Button } from "./ui/button";
+import { useState } from "react";
+import { AnimatePresence } from "framer-motion";
+
+const SlideShow = ({ images }: { images: string[] }) => {
+  const [hovering, setHovering] = useState(false);
+  return (
+    <Splide
+      options={{
+        autoplay: "true",
+        perPage: 1,
+        start: 0,
+        rewind: true,
+        padding: {left:'3rem',right:'3rem'},
+        gap: "1rem",
+      }}
+      hasTrack={false}
+    >
+      <SplideTrack>
+        {images.map((image, idx) => (
+          <SplideSlide key={idx} className="flex items-center justify-center w-full">
+            <Dialog>
+              <DialogTrigger
+                className="relative w-full group overflow-hidden rounded-xl border border-white/10"
+                onMouseEnter={() => setHovering(true)}
+                onMouseLeave={() => setHovering(false)}
+              >
+                <Image
+                  src={image}
+                  alt="screenshot"
+                  width={1920}
+                  height={1080}
+                  className="w-full h-auto aspect-video object-cover rounded-xl transition-transform duration-500 group-hover:scale-105"
+                />
+                <AnimatePresence>
+                  {hovering && (
+                    <motion.div
+                      className="absolute inset-0 flex items-center justify-center bg-black/60 text-white backdrop-blur-[2px]"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <span className="bg-white/10 px-4 py-2 rounded-full border border-white/20">Click to expand overview</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </DialogTrigger>
+              <DialogContent className="min-w-[90vw] h-[90vh] bg-transparent outline-none border-none p-0 m-0">
+                <DialogHeader className="w-full">
+                  {/* <DialogTitle>Are you absolutely sure?</DialogTitle> */}
+                  <DialogDescription>
+                    {image.split("/").pop()}
+                  </DialogDescription>
+                </DialogHeader>
+                <Image
+                  src={image}
+                  alt="screenshot"
+                  width={1000}
+                  height={1000}
+                  className="w-full"
+                  style={{ objectFit: "contain", width: "100vw" }}
+                />
+              </DialogContent>
+            </Dialog>
+          </SplideSlide>
+        ))}
+      </SplideTrack>
+      <div className="splide__progress">
+        <div className="splide__progress__bar"></div>
+      </div>
+    </Splide>
+  );
+};
+export default SlideShow;
